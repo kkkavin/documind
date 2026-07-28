@@ -1,6 +1,9 @@
 langchain
 langchain-community
 langchain-chroma
+langchain-huggingface
+langchain-google-genai
 pypdf
+sentence-transformers
 python-dotenv
 streamlit
