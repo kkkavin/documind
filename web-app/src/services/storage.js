@@ -28,7 +28,7 @@ const DEFAULT_SETTINGS = {
   },
 };
 
-const STORAGE_KEY = "studysync_settings";
+const STORAGE_KEY = "documind_settings";
 
 export const getSettings = () => {
   const saved = localStorage.getItem(STORAGE_KEY);

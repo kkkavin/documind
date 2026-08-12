@@ -5,8 +5,8 @@ from src.chunker import split_documents
 from src.vector_store import create_vector_store
 from src.rag_chain import ask_question
 
-st.set_page_config(page_title="StudySync - AI Note Assistant", page_icon="📚")
-st.title("📚 StudySync: Personalized Notes & Textbook QA")
+st.set_page_config(page_title="DocuMind AI - Personal Document Assistant", page_icon="🧠")
+st.title("🧠 DocuMind AI: Personalized Notes & Textbook QA")
 
 with st.sidebar:
     st.header("Upload Materials")

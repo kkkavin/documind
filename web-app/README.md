@@ -1,16 +1,27 @@
-# React + Vite
+# DocuMind AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A privacy-first RAG chat app built with React, Vite, and Tailwind CSS. Upload a PDF, index it 100% locally in your browser, and ask questions with streaming answers from your chosen LLM provider (BYOK).
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+## Scripts
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `npm run dev` — start the Vite dev server
+- `npm run build` — build for production
+- `npm run lint` — run ESLint
+- `npm run preview` — preview the production build
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Zero-server, browser-local PDF indexing (IndexedDB)
+- Streaming chat completions with Google Gemini, OpenAI, OpenRouter, Hugging Face, or local Ollama
+- BYOK settings saved locally in your browser
+
+## Desktop App
+
+A Streamlit-based companion desktop app lives in `../desktop-app/`. See `requirements.txt` for dependencies and run with `streamlit run app.py`.

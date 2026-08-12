@@ -22,7 +22,7 @@ def ask_question(question: str) -> str:
 
     context_text = format_docs(docs)
 
-    prompt_template = """You are StudySync, an AI academic assistant. Answer the student's question based strictly on the provided context below. 
+    prompt_template = """You are DocuMind AI, an academic assistant. Answer the user's question based strictly on the provided context below. 
 
     Instructions:
     - Always state the page number(s) where you found the information.

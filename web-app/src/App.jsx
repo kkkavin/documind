@@ -143,7 +143,7 @@ export default function App() {
           {/* Header */}
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-blue-400 flex items-center gap-2">
-              📚 StudySync
+              🧠 DocuMind AI
             </h1>
             <button
               onClick={() => setIsSettingsOpen(true)}
@@ -220,7 +220,7 @@ export default function App() {
               <div className="p-4 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
                 <Bot size={32} />
               </div>
-              <h2 className="text-xl font-bold text-slate-200">Welcome to StudySync Web</h2>
+              <h2 className="text-xl font-bold text-slate-200">Welcome to DocuMind AI</h2>
               <p className="text-sm text-slate-400">
                 Upload a PDF note in the sidebar, set up your API key in Settings, and ask any question!
               </p>

@@ -13,7 +13,7 @@ export async function generateCompletionStream(prompt, contextText = "", onToken
     throw new Error(`API Key missing for ${provider.toUpperCase()}. Please add it in Settings.`);
   }
 
-  const systemPrompt = `You are StudySync, an AI academic assistant. Answer the student's question based strictly on the provided context below. 
+  const systemPrompt = `You are DocuMind AI, an academic assistant. Answer the user's question based strictly on the provided context below. 
 
     Instructions:
     - Always state the page number(s) where you found the information.

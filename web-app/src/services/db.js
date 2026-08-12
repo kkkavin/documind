@@ -1,6 +1,6 @@
 import Dexie from "dexie";
 
-export const db = new Dexie("StudySyncDB");
+export const db = new Dexie("DocuMindAIDB");
 
 db.version(1).stores({
   documents: "++id, name, uploadedAt",
