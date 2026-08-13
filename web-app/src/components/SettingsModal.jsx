@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { X, Check, Key, Server, Cpu } from "lucide-react";
 import { getSettings, saveSettings } from "../services/storage";
 
@@ -12,11 +12,11 @@ const PROVIDERS = [
 ];
 
 export default function SettingsModal({ isOpen, onClose }) {
-  if (!isOpen) return null;
-
   const [settings, setSettings] = useState(getSettings());
   const [activeTab, setActiveTab] = useState(settings.activeProvider);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  if (!isOpen) return null;
 
   const handleProviderChange = (field, value) => {
     setSettings((prev) => ({
@@ -46,18 +46,18 @@ export default function SettingsModal({ isOpen, onClose }) {
       <div className="w-full max-w-2xl rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+        <div className="flex items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 border-b border-slate-800">
+          <h2 className="text-lg md:text-xl font-semibold text-white flex items-center gap-2">
             ⚙️ Model Provider & BYOK Settings
           </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition">
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition shrink-0">
             <X size={20} />
           </button>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
           {/* Sidebar Tabs */}
-          <div className="w-48 bg-slate-950/50 p-3 border-r border-slate-800 space-y-1">
+          <div className="grid grid-cols-2 gap-1.5 md:flex md:flex-col md:gap-1 w-full md:w-48 bg-slate-950/50 p-3 border-b md:border-b-0 border-r-0 md:border-r border-slate-800">
             {PROVIDERS.map((p) => {
               const Icon = p.icon;
               const isActive = activeTab === p.p_id || activeTab === p.id;
@@ -67,18 +67,18 @@ export default function SettingsModal({ isOpen, onClose }) {
                 <button
                   key={p.id}
                   onClick={() => setActiveTab(p.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition ${
+                  className={`w-full flex items-center justify-between px-2 py-1.5 md:px-3 md:py-2.5 rounded-xl text-xs md:text-sm font-medium transition ${
                     isActive
                       ? "bg-blue-600 text-white"
                       : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <Icon size={16} />
-                    {p.name}
+                  <span className="flex items-center gap-2 min-w-0">
+                    <Icon size={16} className="shrink-0" />
+                    <span className="truncate">{p.name}</span>
                   </span>
                   {isSelectedProvider && (
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" title="Active Model" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Active Model" />
                   )}
                 </button>
               );
@@ -86,8 +86,8 @@ export default function SettingsModal({ isOpen, onClose }) {
           </div>
 
           {/* Form Content */}
-          <div className="flex-1 p-6 space-y-5 overflow-y-auto">
-            <div className="flex items-center justify-between bg-slate-800/40 p-3 rounded-xl border border-slate-800">
+          <div className="flex-1 min-w-0 p-2.5 md:p-6 space-y-2 md:space-y-5 overflow-y-auto">
+            <div className="flex items-center justify-between gap-2 flex-wrap bg-slate-800/40 p-2 md:p-3 rounded-xl border border-slate-800">
               <span className="text-sm font-medium text-slate-300">Set as Active Provider</span>
               <button
                 onClick={() => {
@@ -114,7 +114,7 @@ export default function SettingsModal({ isOpen, onClose }) {
                   value={currentConfig.apiKey || ""}
                   onChange={(e) => handleProviderChange("apiKey", e.target.value)}
                   placeholder={`Enter your ${activeTab} API key...`}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-1.5 md:px-4 md:py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
             ) : (
@@ -127,7 +127,7 @@ export default function SettingsModal({ isOpen, onClose }) {
                   value={currentConfig.baseUrl || "http://localhost:11434/v1"}
                   onChange={(e) => handleProviderChange("baseUrl", e.target.value)}
                   placeholder="http://localhost:11434/v1"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-1.5 md:px-4 md:py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
             )}
@@ -142,14 +142,14 @@ export default function SettingsModal({ isOpen, onClose }) {
                 value={currentConfig.model || ""}
                 onChange={(e) => handleProviderChange("model", e.target.value)}
                 placeholder="Model ID (e.g. meta-llama/Meta-Llama-3-8B-Instruct)"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-1.5 md:px-4 md:py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-slate-950/40">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 md:px-6 py-3 md:py-4 border-t border-slate-800 bg-slate-950/40">
           <span className="text-xs text-slate-500">
             Keys are saved locally in your browser context.
           </span>
