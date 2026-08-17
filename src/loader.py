@@ -6,7 +6,7 @@ def load_pdf(file):
     return loaded_list
 
 if __name__ == "__main__":
-    raw_text = load_pdf('report')
+    raw_text = load_pdf('a')
     if raw_text:
         print("\n--- RAW TEXT PREVIEW ---")
         print("Metadata:", raw_text[0].metadata)

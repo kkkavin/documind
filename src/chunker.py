@@ -5,3 +5,10 @@ def split_documents(docs):
     chunks = text_splitter.split_documents(docs)
     return chunks
     
+if __name__ == "__main__":
+    from loader import load_pdf
+    chunks = split_documents(load_pdf('a'))
+    if chunks:
+        print("\n--- RAW TEXTchunks ---")
+        print("Metadata:", chunks[0].metadata)
+        print("Text Preview:\n", chunks[0].page_content)
