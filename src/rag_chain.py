@@ -1,46 +1,77 @@
-import os
-from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from src.vector_store import query_vector_store
+"""RAG chain: retrieval + context assembly + streaming generation.
 
-load_dotenv()
+The retrieval happens up-front so the UI can display "Source Citations" while
+the model is still streaming its answer. Generation uses the GGUF's baked-in
+chat template (Qwen / Llama families) via ``llama_cpp`` and yields text
+deltas for ``st.write_stream``.
+"""
 
-if not os.getenv("GOOGLE_API_KEY"):
-    raise ValueError("⚠️ GOOGLE_API_KEY not found in .env file! Please set it before running.")
+from __future__ import annotations
 
-def format_docs(docs):
-    formatted = []
-    for doc in docs:
-        page = doc.metadata.get("page_label", "N/A")
-        formatted.append(f"[Page {page}]:\n{doc.page_content}")
-    return "\n\n".join(formatted)
+from typing import Iterator
 
-def ask_question(question: str) -> str:
-    docs = query_vector_store(question)
+from langchain_core.documents import Document
 
-    context_text = format_docs(docs)
+SYSTEM_PROMPT = """You are DocuMind, a local study assistant.
+Answer the question using ONLY the notes provided below.
+If the answer is not in the notes, say exactly:
+"I could not find the answer to this question in the provided notes."
+Cite your sources: after every statement that comes from a note, mention the
+source file and page or line number, e.g. (notes.pdf, p. 3).
+Be concise and accurate; never invent facts."""
 
-    prompt_template = """You are DocuMind AI, an academic assistant. Answer the user's question based strictly on the provided context below. 
+# Keep the last 8 chat messages so the model stays responsive without
+# blowing up the context window.
+HISTORY_LIMIT = 8
 
-    Instructions:
-    - Always state the page number(s) where you found the information.
-    - If the answer cannot be found in the provided context, state clearly: "I could not find the answer to this question in the provided notes."
-    - Keep your answer clear, accurate, and concise.
 
-    Context:
-    {context}
+def format_context(sources: list[tuple[Document, float]]) -> str:
+    """Turn retrieved chunks into numbered, citeable context blocks."""
+    blocks: list[str] = []
+    for i, (doc, score) in enumerate(sources, start=1):
+        location = doc.metadata.get("page") or doc.metadata.get("line") or "?"
+        label = doc.metadata.get("file_name", "?")
+        excerpt = doc.page_content.strip().replace("\n", " ")
+        blocks.append(f"[{i}] {label} · p.{location} (score {score:.2f}): {excerpt}")
+    return "\n\n".join(blocks)
 
-    Question: {question}
 
-    Answer:"""
+def build_messages(
+    question: str,
+    context: str,
+    history: list[dict] | None = None,
+) -> list[dict]:
+    """Assemble the message list: system prompt, trimmed history, grounded user turn."""
+    messages: list[dict] = [{"role": "system", "content": SYSTEM_PROMPT}]
+    for message in (history or [])[-HISTORY_LIMIT:]:
+        role = message.get("role")
+        content = message.get("content")
+        if role in {"user", "assistant"} and isinstance(content, str):
+            messages.append({"role": role, "content": content})
+    user_content = f"Notes:\n{context}\n\nQuestion: {question}" if context else question
+    messages.append({"role": "user", "content": user_content})
+    return messages
 
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
 
-    prompt = PromptTemplate.from_template(prompt_template)
+def generate(
+    question: str,
+    llm,
+    store,
+    folder,
+    k: int = 3,
+    temperature: float = 0.7,
+    max_tokens: int = 512,
+    history: list[dict] | None = None,
+) -> tuple[list[tuple[Document, float]], Iterator[str]]:
+    """Retrieve evidence and return ``(sources, stream)``.
 
-    chain = prompt | llm | StrOutputParser()
+    The caller consumes ``stream`` (text deltas) and renders ``sources``
+    alongside the answer.
+    """
+    from src.model_manager import stream_chat
+    from src.vector_store import query_vector_store
 
-    response = chain.invoke({"context": context_text, "question": question})
-    return response
+    sources = query_vector_store(folder, question, k=k)
+    context = format_context(sources)
+    messages = build_messages(question, context, history)
+    return sources, stream_chat(llm, messages, temperature=temperature, max_tokens=max_tokens)
